@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Users } from 'lucide-react';
+import { Users, Github } from 'lucide-react';
 import { MeetupGrid } from './components/MeetupGrid';
 import type { MeetupGroup } from './types/meetup';
 import { supabase } from './lib/supabase';
@@ -44,11 +44,22 @@ function App() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center gap-3">
-            <Users className="text-blue-600" size={32} />
-            <h1 className="text-3xl font-bold text-gray-900">
-              GTA Tech Meetups
-            </h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Users className="text-blue-600" size={32} />
+              <h1 className="text-3xl font-bold text-gray-900">
+                GTA Tech Meetups
+              </h1>
+            </div>
+            <a
+              href="https://github.com/Sean0628/gta-dev-web/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-md transition-colors"
+            >
+              <Github size={20} />
+              <span>Open Issue</span>
+            </a>
           </div>
         </div>
       </header>
