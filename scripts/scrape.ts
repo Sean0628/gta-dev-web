@@ -7,7 +7,7 @@ import { meetupSources } from '../src/data/meetups';
 dotenv.config();
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseServiceKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const DRY_RUN = process.env.DRY_RUN === 'true';
 
