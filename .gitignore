@@ -1,0 +1,55 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+.vite/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Environment files (DO NOT commit secrets)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*.local
+
+# Supabase-specific files
+.supabase/
+.supabase/config.json
+.supabase/functions/.netlify/
+supabase/.temp/
+supabase/.cache/
+
+# Vercel & Netlify
+.vercel/
+.netlify/
+
+# Logs & Debug Files
+*.log
+*.lock
+coverage/
+*.pid
+*.seed
+*.sqlite
+
+# TypeScript Output
+*.tsbuildinfo
+
+# Bolt DB (if you use it)
+.bolt/
+
+# Ignoring built files
+build/
+out/
+
+# Ignore backups or temporary files
+*.bak
+*.swp
+*.swo
+
