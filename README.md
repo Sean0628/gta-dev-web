@@ -1,5 +1,7 @@
 # GTA Tech Meetups
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Sean0628/gta-dev-web/blob/master/LICENSE)
+
 This repository aims to list all tech-related meetups, user groups, and similar communities happening in the Greater Toronto Area (GTA). The project provides a centralized platform to discover and track various tech communities in the region.
 
 Contributions Welcome! If you know of a meetup or user group that isn't listed, feel free to open a PR and add it.
@@ -125,3 +127,6 @@ To customize scraping for a new platform:
 1. Add the platform's URL pattern to `scrapeMeetupPage()` in `scripts/scrape.ts`
 2. Implement the scraping logic using Cheerio selectors
 3. Return the scraped data in the standard format
+
+## Copyright
+Copyright (c) 2025 Sho Ito. See [LICENSE](https://github.com/Sean0628/gta-dev-web/blob/master/LICENSE) for further details.
