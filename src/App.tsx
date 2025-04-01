@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { Users, Github } from 'lucide-react';
+import React from 'react';
+import { Users, Github, CalendarDays } from 'lucide-react';
 import { MeetupGrid } from './components/MeetupGrid';
+import { Events } from './pages/Events';
 import type { MeetupGroup } from './types/meetup';
 import { supabase } from './lib/supabase';
 
 function App() {
-  const [groupedMeetups, setGroupedMeetups] = useState<MeetupGroup[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [view, setView] = React.useState<'meetups' | 'events'>('meetups');
+  const [groupedMeetups, setGroupedMeetups] = React.useState<MeetupGroup[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     async function fetchMeetups() {
       try {
         const { data, error } = await supabase
@@ -51,36 +53,66 @@ function App() {
                 GTA Tech Meetups
               </h1>
             </div>
-            <a
-              href="https://github.com/Sean0628/gta-dev-web/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-md transition-colors"
-            >
-              <Github size={20} />
-              <span>Open Issue</span>
-            </a>
+            <div className="flex items-center gap-4">
+              <nav className="flex items-center gap-2">
+                <button
+                  onClick={() => setView('meetups')}
+                  className={`px-4 py-2 rounded-md transition-colors ${
+                    view === 'meetups'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Users size={20} className="inline-block mr-2" />
+                  Meetups
+                </button>
+                <button
+                  onClick={() => setView('events')}
+                  className={`px-4 py-2 rounded-md transition-colors ${
+                    view === 'events'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <CalendarDays size={20} className="inline-block mr-2" />
+                  Events
+                </button>
+              </nav>
+              <a
+                href="https://github.com/Sean0628/gta-dev-web/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-md transition-colors"
+              >
+                <Github size={20} />
+                <span>Open Issue</span>
+              </a>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="text-gray-600">Loading meetups...</div>
-          </div>
-        ) : error ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-            {error}
-          </div>
-        ) : (
-          <div className="space-y-12">
-            {groupedMeetups.map((group) => (
-              <MeetupGrid key={group.type} group={group} />
-            ))}
-          </div>
-        )}
-      </main>
+      {view === 'meetups' ? (
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {loading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="text-gray-600">Loading meetups...</div>
+            </div>
+          ) : error ? (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+              {error}
+            </div>
+          ) : (
+            <div className="space-y-12">
+              {groupedMeetups.map((group) => (
+                <MeetupGrid key={group.type} group={group} />
+              ))}
+            </div>
+          )}
+        </main>
+      ) : (
+        <Events />
+      )}
 
       <footer className="bg-white border-t border-gray-200 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
