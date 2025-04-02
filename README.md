@@ -115,6 +115,8 @@ The project includes an automated scraper to keep meetup information up-to-date:
 1. Run the scraper:
 ```bash
 npm run scrape
+npm run scrape:meetups // Run meetup scraping
+npm run scrape:events  // Run event scraping
 ```
 
 The scraper will:
@@ -124,7 +126,7 @@ The scraper will:
 - Track last scrape time
 
 To customize scraping for a new platform:
-1. Add the platform's URL pattern to `scrapeMeetupPage()` in `scripts/scrape.ts`
+1. Add the platform's URL pattern to `scrapeMeetupPage()` in `scripts/*`
 2. Implement the scraping logic using Cheerio selectors
 3. Return the scraped data in the standard format
 

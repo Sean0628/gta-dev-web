@@ -66,7 +66,7 @@ async function main() {
 
   for (const source of meetupSources) {
     console.log(`Processing ${source.url}...`);
-    
+
     const { data: existingMeetup } = await supabase
       .from('meetups')
       .select('id')
@@ -74,7 +74,7 @@ async function main() {
       .single();
 
     const scrapedData = await scrapeMeetupPage(source.url);
-    
+
     if (existingMeetup) {
       console.log(`Would update meetup: ${source.url}`, scrapedData);
       if (!DRY_RUN) {
