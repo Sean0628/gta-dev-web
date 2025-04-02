@@ -37,7 +37,7 @@ export function Events() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex items-center justify-center h-64">
+        <div className="flex items-center justify-center h-64" role="status">
           <div className="text-gray-600">Loading events...</div>
         </div>
       </div>
@@ -47,7 +47,7 @@ export function Events() {
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700" role="alert">
           {error}
         </div>
       </div>
@@ -59,7 +59,7 @@ export function Events() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center py-12">
           <h2 className="text-xl font-semibold text-gray-700 mb-2">No upcoming events</h2>
-          <p className="text-gray-500">Check back later for new events!</p>
+          <p className="text-gray-500">Check back later for new tech events in Toronto!</p>
         </div>
       </div>
     );
@@ -67,7 +67,7 @@ export function Events() {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">Upcoming Events</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-8">Upcoming Tech Events in Toronto</h1>
       <EventList events={events} />
     </main>
   );

@@ -43,6 +43,13 @@ function App() {
     fetchMeetups();
   }, []);
 
+  // Update document title based on view
+  React.useEffect(() => {
+    document.title = view === 'meetups'
+      ? 'Toronto Tech Meetups & Groups | GTA Tech Community'
+      : 'Upcoming Tech Events in Toronto | GTA Tech Community';
+  }, [view]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
@@ -50,7 +57,7 @@ function App() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Users className="text-blue-600" size={32} />
+                <Users className="text-blue-600" size={32} aria-hidden="true" />
                 <h1 className="text-2xl font-bold text-gray-900">
                   GTA Tech Meetups
                 </h1>
@@ -58,12 +65,18 @@ function App() {
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="sm:hidden"
+                aria-label="Toggle menu"
+                aria-expanded={isMenuOpen}
               >
                 <Menu size={24} className="text-gray-600" />
               </button>
             </div>
 
-            <div className={`flex flex-col sm:flex-row items-start sm:items-center gap-4 ${isMenuOpen ? 'block' : 'hidden sm:flex'}`}>
+            <div
+              className={`flex flex-col sm:flex-row items-start sm:items-center gap-4 ${isMenuOpen ? 'block' : 'hidden sm:flex'}`}
+              role="navigation"
+              aria-label="Main navigation"
+            >
               <nav className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <button
                   onClick={() => {
@@ -75,9 +88,10 @@ function App() {
                       ? 'bg-blue-100 text-blue-700'
                       : 'text-gray-600 hover:bg-gray-100'
                   }`}
+                  aria-current={view === 'meetups' ? 'page' : undefined}
                 >
-                  <Users size={20} className="inline-block mr-2" />
-                  Meetups
+                  <Users size={20} className="inline-block mr-2" aria-hidden="true" />
+                  Tech Meetups
                 </button>
                 <button
                   onClick={() => {
@@ -89,9 +103,10 @@ function App() {
                       ? 'bg-blue-100 text-blue-700'
                       : 'text-gray-600 hover:bg-gray-100'
                   }`}
+                  aria-current={view === 'events' ? 'page' : undefined}
                 >
-                  <CalendarDays size={20} className="inline-block mr-2" />
-                  Events
+                  <CalendarDays size={20} className="inline-block mr-2" aria-hidden="true" />
+                  Tech Events
                 </button>
               </nav>
               <a
@@ -100,8 +115,9 @@ function App() {
                 rel="noopener noreferrer"
                 onClick={() => setIsMenuOpen(false)}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-md transition-colors w-full sm:w-auto justify-center"
+                aria-label="Open GitHub issue"
               >
-                <Github size={20} />
+                <Github size={20} aria-hidden="true" />
                 <span>Open Issue</span>
               </a>
             </div>
@@ -111,12 +127,13 @@ function App() {
 
       {view === 'meetups' ? (
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <h2 className="sr-only">Toronto Tech Meetups and Communities</h2>
           {loading ? (
-            <div className="flex items-center justify-center h-64">
+            <div className="flex items-center justify-center h-64" role="status">
               <div className="text-gray-600">Loading meetups...</div>
             </div>
           ) : error ? (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700" role="alert">
               {error}
             </div>
           ) : (
@@ -142,4 +159,4 @@ function App() {
   );
 }
 
-export default App;
+export default App
