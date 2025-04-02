@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Github, CalendarDays } from 'lucide-react';
+import { Users, Github, CalendarDays, Menu } from 'lucide-react';
 import { MeetupGrid } from './components/MeetupGrid';
 import { Events } from './pages/Events';
 import type { MeetupGroup } from './types/meetup';
@@ -10,6 +10,7 @@ function App() {
   const [groupedMeetups, setGroupedMeetups] = React.useState<MeetupGroup[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   React.useEffect(() => {
     async function fetchMeetups() {
@@ -45,18 +46,30 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Users className="text-blue-600" size={32} />
-              <h1 className="text-3xl font-bold text-gray-900">
-                GTA Tech Meetups
-              </h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Users className="text-blue-600" size={32} />
+                <h1 className="text-2xl font-bold text-gray-900">
+                  GTA Tech Meetups
+                </h1>
+              </div>
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="sm:hidden"
+              >
+                <Menu size={24} className="text-gray-600" />
+              </button>
             </div>
-            <div className="flex items-center gap-4">
-              <nav className="flex items-center gap-2">
+
+            <div className={`flex flex-col sm:flex-row items-start sm:items-center gap-4 ${isMenuOpen ? 'block' : 'hidden sm:flex'}`}>
+              <nav className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <button
-                  onClick={() => setView('meetups')}
+                  onClick={() => {
+                    setView('meetups');
+                    setIsMenuOpen(false);
+                  }}
                   className={`px-4 py-2 rounded-md transition-colors ${
                     view === 'meetups'
                       ? 'bg-blue-100 text-blue-700'
@@ -67,7 +80,10 @@ function App() {
                   Meetups
                 </button>
                 <button
-                  onClick={() => setView('events')}
+                  onClick={() => {
+                    setView('events');
+                    setIsMenuOpen(false);
+                  }}
                   className={`px-4 py-2 rounded-md transition-colors ${
                     view === 'events'
                       ? 'bg-blue-100 text-blue-700'
@@ -82,7 +98,8 @@ function App() {
                 href="https://github.com/Sean0628/gta-dev-web/issues"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-md transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-md transition-colors w-full sm:w-auto justify-center"
               >
                 <Github size={20} />
                 <span>Open Issue</span>
