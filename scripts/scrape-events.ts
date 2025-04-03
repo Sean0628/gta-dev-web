@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { parse } from 'date-fns';
 import puppeteer from 'puppeteer';
 import dotenv from 'dotenv';
 
@@ -33,21 +34,32 @@ async function scrapeEventsFromTorontoRuby(url: string, meetupId: string) {
 
     // Extract event details
     const events = await page.evaluate((meetupId) => {
-      return [...document.querySelectorAll('div[id^="event_"]')].map(event => ({
+      return [...document.querySelectorAll('div[id^="event_"]')].map(event => {
+        const rawDate = event.querySelector('p')?.innerText.trim() || 'No datetime found';
+        return {
         meetup_id: meetupId,
         title: event.querySelector('h2 a')?.innerText.trim() || 'No title found',
-        datetime: event.querySelector('p')?.innerText.trim() || 'No datetime found',
+        datetime: rawDate,
         venue: event.querySelector('.trix-content')?.innerText.trim() || 'No venue found',
         description: event.querySelector('.ml-4 .trix-content')?.innerText.trim() || 'No description',
-        logo: event.querySelector('.max-h-20')?.src || null,
+        logo: null,
         link: event.querySelector('a.rounded-full')?.href || null,
-      }));
+      };
+      });
     }, meetupId);
 
-    console.log(`Found ${events.length} events for Toronto Ruby:`, events);
 
     await browser.close();
-    return events;
+    // Format datetime
+    const parsedEvents = events.map(event => {
+        const parsedDate = parse(event.datetime, "MMM dd, yyyy '@' hh:mmaaa", new Date());
+        event.datetime = parsedDate;
+        return event;
+    });
+
+    console.log(`Found ${parsedEvents.length} events for Toronto Ruby:`, parsedEvents);
+
+    return parsedEvents;
   } catch (error) {
     console.error(`Error scraping events from Toronto Ruby:`, error);
     return [];
@@ -177,4 +189,7 @@ async function main() {
   console.log('\nEvent scraping completed');
 }
 
-main().catch(console.error);
+main().catch(error => {
+  console.error(error);
+  process.exit(1);
+});
