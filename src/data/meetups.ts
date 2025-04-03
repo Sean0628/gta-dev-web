@@ -56,6 +56,21 @@ export const meetupSources: MeetupSource[] = [
     type: "meetups"
   },
   {
+    url: "https://www.meetup.com/ubuntu-linux-toronto-meetup/",
+    platform: "meetup",
+    type: "meetups"
+  },
+  {
+    url: "https://www.meetup.com/toronto-enterprise-devops-user-group/",
+    platform: "meetup",
+    type: "meetups"
+  },
+  {
+    url: "https://www.meetup.com/metro-toronto-azure-community/",
+    platform: "meetup",
+    type: "meetups"
+  },
+  {
     url: "https://toronto-ruby.com/",
     platform: "other",
     type: "meetups"
