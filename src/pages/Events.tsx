@@ -17,13 +17,25 @@ export function Events() {
 
         const { data, error } = await supabase
           .from('events')
-          .select('*')
+          .select(`
+            *,
+            meetups (
+              logo
+            )
+          `)
           .gte('datetime', now.toISOString())
           .order('datetime', { ascending: true });
 
         if (error) throw error;
 
-        setEvents(data || []);
+        // Transform the data to include meetup logo as fallback
+        const eventsWithLogos = (data || []).map(event => ({
+          ...event,
+          logo: event.logo || event.meetups?.logo,
+          meetups: undefined // Remove the meetups object as we don't need it anymore
+        }));
+
+        setEvents(eventsWithLogos);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch events');
       } finally {
