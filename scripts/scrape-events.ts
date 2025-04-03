@@ -130,7 +130,7 @@ async function main() {
       let events = [];
 
       if (meetup.url.includes('meetup.com')) {
-        // events = await scrapeEventsFromMeetup(meetup.url, meetup.id);
+        events = await scrapeEventsFromMeetup(meetup.url, meetup.id);
       } else if (meetup.url.includes('toronto-ruby.com')) {
         events = await scrapeEventsFromTorontoRuby(meetup.url, meetup.id);
       } else {
