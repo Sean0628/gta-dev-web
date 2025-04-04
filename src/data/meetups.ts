@@ -1,7 +1,6 @@
 export interface MeetupSource {
   url: string;
-  platform: 'meetup' | 'other';
-  type: 'meetups' | 'others';
+  platform: 'meetup' | 'other'; type: 'meetups' | 'others';
 }
 
 export const meetupSources: MeetupSource[] = [
@@ -67,6 +66,11 @@ export const meetupSources: MeetupSource[] = [
   },
   {
     url: "https://www.meetup.com/metro-toronto-azure-community/",
+    platform: "meetup",
+    type: "meetups"
+  },
+  {
+    url: "https://www.meetup.com/toronto-mongodb-usergroup/",
     platform: "meetup",
     type: "meetups"
   },
