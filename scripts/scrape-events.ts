@@ -53,7 +53,7 @@ async function scrapeEventsFromTorontoRuby(url: string, meetupId: string) {
     // Format datetime
     const parsedEvents = events.map(event => {
         const parsedDate = parse(event.datetime, "MMM dd, yyyy '@' hh:mmaaa", new Date());
-        event.datetime = parsedDate;
+        event.datetime = parsedDate.toISOString();
         return event;
     });
 
