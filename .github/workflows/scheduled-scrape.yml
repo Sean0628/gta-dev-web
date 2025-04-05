@@ -8,6 +8,7 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    environment: production
     env:
       VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
