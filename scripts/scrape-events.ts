@@ -72,7 +72,11 @@ async function scrapeEventsFromTorontoRuby(url: string, meetupId: string) {
 async function scrapeEventsFromMeetup(url: string, meetupId: string) {
   try {
     console.log(`Opening browser for ${url}...`);
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+
     const page = await browser.newPage();
 
     // Set headers to mimic a real browser
