@@ -55,8 +55,11 @@ async function scrapeEventsFromTorontoRuby(url: string, meetupId: string) {
     await browser.close();
     // Format datetime
     const parsedEvents = events.map(event => {
-        const parsedDate = parse(event.datetime, "MMM dd, yyyy '@' hh:mmaaa", new Date());
-        event.datetime = parsedDate.toISOString();
+        const parsedLocal = parse(event.datetime, "MMM dd, yyyy '@' hh:mmaaa", new Date());
+
+        // Convert to UTC manually (assumes parsedLocal is in ET)
+        const utcDate = new Date(parsedLocal.getTime() + parsedLocal.getTimezoneOffset() * 60000);
+        event.datetime = utcDate.toISOString();
         return event;
     });
 
