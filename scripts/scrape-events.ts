@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { parse } from 'date-fns';
-import { zonedTimeToUtc } from 'date-fns-tz';
+import { fromZonedTime } from 'date-fns-tz';
+
 import puppeteer from 'puppeteer';
 import dotenv from 'dotenv';
 
@@ -57,7 +58,7 @@ async function scrapeEventsFromTorontoRuby(url: string, meetupId: string) {
     // Format datetime
     const parsedEvents = events.map(event => {
         const parsedLocal = parse(event.datetime, "MMM dd, yyyy '@' hh:mmaaa", new Date());
-        const utcDate = zonedTimeToUtc(parsedLocal, 'America/Toronto');
+        const utcDate = fromZonedTime(parsedLocal, 'America/Toronto');
         event.datetime = utcDate.toISOString();
         return event;
     });
