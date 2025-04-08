@@ -145,4 +145,14 @@ export const meetupSources: MeetupSource[] = [
     platform: "other",
     type: "meetups",
   },
+  {
+    url: "https://www.meetup.com/data-drinks-toronto/",
+    platform: "meetup",
+    type: "meetups",
+  },
+  {
+    url: "https://www.meetup.com/ai-human-flourishing-meetup/",
+    platform: "meetup",
+    type: "meetups",
+  },
 ];
