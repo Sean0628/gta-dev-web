@@ -110,41 +110,46 @@ export const meetupSources: MeetupSource[] = [
     platform: "meetup",
     type: "meetups",
   },
-  {
-    url: "https://www.techinto.ca/",
-    platform: "other",
-    type: "meetups",
-  },
+  // TODO: Need custom scraping script for techinto
+  // {
+  //   url: "https://www.meetup.com/techinto/",
+  //   platform: "other",
+  //   type: "meetups",
+  // },
   {
     url: "https://www.meetup.com/mindstone-toronto-ai-meetup/", // "https://community.mindstone.com/events"
     platform: "meetup",
     type: "meetups",
   },
-  {
-    url: "https://www.genaicollective.ai/chapters/toronto",
-    platform: "other",
-    type: "meetups",
-  },
-  {
-    url: "https://aitinkerers.org/p/welcome",
-    platform: "other",
-    type: "meetups",
-  },
+  // TODO: Need custom scraping script for GenAI Collective Toronto
+  // {
+  //   url: "https://www.genaicollective.ai/chapters/toronto",
+  //   platform: "other",
+  //   type: "meetups",
+  // },
+  // TODO: Need custom scraping script for AI Tinkerers
+  // {
+  //   url: "https://aitinkerers.org/p/welcome",
+  //   platform: "other",
+  //   type: "meetups",
+  // },
   {
     url: "https://www.meetup.com/toronto-ai-aligners/",
     platform: "meetup",
     type: "meetups",
   },
-  {
-    url: "https://taico.ca",
-    platform: "other",
-    type: "meetups",
-  },
-  {
-    url: "https://www.techto.org",
-    platform: "other",
-    type: "meetups",
-  },
+  // TODO: Need custom scraping script for TAICO
+  // {
+  //   url: "https://taico.ca",
+  //   platform: "other",
+  //   type: "meetups",
+  // },
+  // TODO: Need custom scraping script for TechTO
+  // {
+  //   url: "https://www.techto.org",
+  //   platform: "other",
+  //   type: "meetups",
+  // },
   {
     url: "https://www.meetup.com/data-drinks-toronto/",
     platform: "meetup",
