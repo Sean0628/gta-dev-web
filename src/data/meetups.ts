@@ -81,16 +81,6 @@ export const meetupSources: MeetupSource[] = [
     type: "others",
   },
   {
-    url: "https://www.meetup.com/brainstation-toronto-tech-skills-and-careers/",
-    platform: "meetup",
-    type: "meetups",
-  },
-  {
-    url: "https://www.meetup.com/metro-toronto-azure-community/",
-    platform: "meetup",
-    type: "meetups",
-  },
-  {
     url: "https://www.meetup.com/pragmatic-tech/",
     platform: "meetup",
     type: "meetups",
