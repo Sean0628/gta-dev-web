@@ -165,4 +165,9 @@ export const meetupSources: MeetupSource[] = [
     platform: "meetup",
     type: "meetups",
   },
+  {
+    url: "https://www.meetup.com/taico-toronto-artificial-intelligence-and-cybersecurity-org/",
+    platform: "meetup",
+    type: "meetups",
+  }
 ];
