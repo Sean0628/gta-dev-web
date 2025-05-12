@@ -199,7 +199,10 @@ async function main() {
   console.log('\nEvent scraping completed');
 }
 
-main().catch(error => {
-  console.error(error);
-  process.exit(1);
-});
+main()
+  .then(() => {
+    console.log('Scraping completed successfully');
+  })
+  .catch(error => {
+    console.error('Error during scraping:', error);
+  });
