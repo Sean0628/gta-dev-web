@@ -143,6 +143,16 @@ export const meetupSources: MeetupSource[] = [
     platform: "meetup",
     type: "meetups",
   },
+  {
+    url: "https://www.meetup.com/spdy-meetup-toronto/",
+    platform: "meetup",
+    type: "meetups",
+  },
+  {
+    url: "https://www.meetup.com/apis-and-ipas/",
+    platform: "meetup",
+    type: "meetups",
+  },
   // TODO: Need custom scraping script for TAICO
   // {
   //   url: "https://taico.ca",
