@@ -202,7 +202,9 @@ async function main() {
 main()
   .then(() => {
     console.log('Scraping completed successfully');
+    process.exit(0);
   })
   .catch(error => {
     console.error('Error during scraping:', error);
+    process.exit(1);
   });
