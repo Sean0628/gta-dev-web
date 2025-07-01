@@ -2,8 +2,11 @@ import { createClient } from '@supabase/supabase-js';
 import { parse } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
 
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import dotenv from 'dotenv';
+
+puppeteer.use(StealthPlugin());
 
 // Load environment variables
 dotenv.config();
@@ -87,7 +90,9 @@ async function scrapeEventsFromMeetup(url: string, meetupId: string) {
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
     );
 
-    await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+
+    await page.waitForSelector('a[id^="event-card"]', { timeout: 15000 });
 
     console.log(`Page loaded: ${url}`);
 
