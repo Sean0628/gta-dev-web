@@ -7,6 +7,7 @@ import type { MeetupGroup } from './types/meetup';
 import type { Theme } from './lib/theme';
 import { supabase } from './lib/supabase';
 import { getInitialTheme, applyTheme } from './lib/theme';
+import { getCached, isFresh, setCache } from './lib/cache';
 
 function App() {
   const [view, setView] = React.useState<'meetups' | 'events'>('meetups');
@@ -34,6 +35,30 @@ function App() {
   }, [theme]);
 
   React.useEffect(() => {
+    const CACHE_KEY = 'meetups';
+
+    function groupMeetups(data: any[]): MeetupGroup[] {
+      return data.reduce<MeetupGroup[]>((acc, meetup) => {
+        const group = acc.find((g) => g.type === meetup.type);
+        if (group) {
+          group.items.push(meetup);
+        } else {
+          acc.push({ type: meetup.type, items: [meetup] });
+        }
+        return acc;
+      }, []);
+    }
+
+    // Show cached data immediately if available
+    const cached = getCached<any[]>(CACHE_KEY);
+    if (cached) {
+      setGroupedMeetups(groupMeetups(cached));
+      setLoading(false);
+    }
+
+    // Skip fetch if cache is still fresh
+    if (isFresh(CACHE_KEY)) return;
+
     async function fetchMeetups() {
       try {
         const { data, error } = await supabase
@@ -43,19 +68,12 @@ function App() {
 
         if (error) throw error;
 
-        const grouped = data.reduce<MeetupGroup[]>((acc, meetup) => {
-          const group = acc.find((g) => g.type === meetup.type);
-          if (group) {
-            group.items.push(meetup);
-          } else {
-            acc.push({ type: meetup.type, items: [meetup] });
-          }
-          return acc;
-        }, []);
-
-        setGroupedMeetups(grouped);
+        setCache(CACHE_KEY, data);
+        setGroupedMeetups(groupMeetups(data));
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch meetups');
+        if (!cached) {
+          setError(err instanceof Error ? err.message : 'Failed to fetch meetups');
+        }
       } finally {
         setLoading(false);
       }
