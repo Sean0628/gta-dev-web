@@ -23,35 +23,68 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   }
 });
 
-async function scrapeMeetupPage(url) {
+function extractApolloState(html: string): Record<string, any> | null {
+  const $ = load(html);
+  const nextDataScript = $('script#__NEXT_DATA__').html();
+  if (!nextDataScript) return null;
+  try {
+    const nextData = JSON.parse(nextDataScript);
+    return nextData?.props?.pageProps?.__APOLLO_STATE__ ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function scrapeMeetupFromApollo(apolloState: Record<string, any>) {
+  const groupKey = Object.keys(apolloState).find(k => k.startsWith('Group:'));
+  if (!groupKey) return {};
+
+  const group = apolloState[groupKey];
+  const name = group?.name ?? '';
+  const description = group?.description ?? '';
+
+  let logo: string | null = null;
+  const photoRef = group?.keyGroupPhoto?.__ref ?? group?.keyGroupPhoto?.id;
+  if (photoRef && apolloState[photoRef]) {
+    logo = apolloState[photoRef].highResUrl ?? apolloState[photoRef].source ?? null;
+  }
+
+  return { name, description, logo };
+}
+
+async function scrapeMeetupPage(url: string) {
   try {
     const response = await fetch(url);
     const html = await response.text();
-    const $ = load(html);
 
     if (url.includes('meetup.com')) {
-      return {
-        name: $('.ds-font-title-1').first().text().trim(),
-        description: $('.utils_description__BlOCA').first().text().trim(),
-        logo: $('.aspect-video.w-full.object-cover.object-center.md\\:rounded-lg').first().attr('src'),
-      };
-    } else if (url.includes('toronto-ruby.com')) {
-      const logoUrl = $('.mx-auto.max-w-\\[16rem\\].h-auto').first().attr('src');
+      const apolloState = extractApolloState(html);
+      if (apolloState) {
+        return scrapeMeetupFromApollo(apolloState);
+      }
+      console.warn(`Could not extract Apollo state from ${url}`);
+      return {};
+    }
+
+    const $ = load(html);
+
+    if (url.includes('toronto-ruby.com')) {
+      const logoUrl = $('img[alt="Toronto Ruby"]').first().attr('src');
       const fullLogoUrl = logoUrl ? new URL(logoUrl, url).href : null;
-      const description = $('meta[name="description"]').attr('content') || $('p').first().text().trim();
-      const name = $('title').text().trim() || $('.text-ruby').first().text().trim() || 'Toronto Ruby';
+      const description = $('meta[property="og:description"]').attr('content')?.trim() || $('p').first().text().trim();
+      const name = 'Toronto Ruby';
       return { name, description, logo: fullLogoUrl };
-    } else if (url.includes('builder-sundays.myshopify.com')) {
-      const name = $('.header__heading-logo').attr('alt') || $('h1.header__heading').text().trim() || 'Builder Sundays';
-      const description = $('.rich-text__text.rte').map((_, el) => $(el).text().trim()).get().join('\n\n');
-      const logoUrl = $('.header__heading-logo').attr('src');
+    } else if (url.includes('builder-sundays') || url.includes('buildersundays')) {
+      const name = $('img[alt="Builder Sundays"]').attr('alt') || 'Builder Sundays';
+      const description = $('div[class*="rich_text"] p').map((_, el) => $(el).text().trim()).get().join('\n\n');
+      const logoUrl = $('img[alt="Builder Sundays"]').attr('src');
       const fullLogoUrl = logoUrl ? new URL(logoUrl, url).href : null;
-      const locations = $('.multicolumn-card__info').map((_, el) => {
+      const locations = $('.multicolumn__item').map((_, el) => {
         const title = $(el).find('h3').text().trim();
-        const address = $(el).find('.rte p a').first().text().trim();
+        const address = $(el).find('p a').first().text().trim();
         return `${title}: ${address}`;
       }).get().join('\n');
-      const fullDescription = `${description}\n\nLocations:\n${locations}`;
+      const fullDescription = locations ? `${description}\n\nLocations:\n${locations}` : description;
       return { name, description: fullDescription, logo: fullLogoUrl };
     }
     return {};

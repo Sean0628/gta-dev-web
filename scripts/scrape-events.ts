@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { load } from 'cheerio';
 import { parse } from 'date-fns';
 import { fromZonedTime } from 'date-fns-tz';
 
@@ -43,15 +44,16 @@ async function scrapeEventsFromTorontoRuby(url: string, meetupId: string) {
     // Extract event details
     const events = await page.evaluate((meetupId) => {
       return [...document.querySelectorAll('div[id^="event_"]')].map(event => {
-        const rawDate = event.querySelector('p')?.innerText.trim() || 'No datetime found';
+        const rawDate = event.querySelector('span.font-medium')?.innerText.trim() || 'No datetime found';
+        const linkPath = event.querySelector('h2 a')?.getAttribute('href');
         return {
         meetup_id: meetupId,
         title: event.querySelector('h2 a')?.innerText.trim() || 'No title found',
         datetime: rawDate,
         venue: event.querySelector('.trix-content')?.innerText.trim() || 'No venue found',
-        description: event.querySelector('.ml-4 .trix-content')?.innerText.trim() || 'No description',
+        description: event.querySelectorAll('.trix-content')[1]?.innerText.trim() || 'No description',
         logo: null,
-        link: event.querySelector('a.rounded-full')?.href || null,
+        link: linkPath ? `https://toronto-ruby.com${linkPath}` : null,
       };
       });
     }, meetupId);
@@ -77,45 +79,67 @@ async function scrapeEventsFromTorontoRuby(url: string, meetupId: string) {
 
 async function scrapeEventsFromMeetup(url: string, meetupId: string) {
   try {
-    console.log(`Opening browser for ${url}...`);
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+    // Ensure we hit the /events/ page
+    const eventsUrl = url.endsWith('/') ? `${url}events/` : `${url}/events/`;
+    console.log(`Fetching events page: ${eventsUrl}...`);
 
-    const page = await browser.newPage();
+    const response = await fetch(eventsUrl);
+    const html = await response.text();
+    const $ = load(html);
 
-    // Set headers to mimic a real browser
-    await page.setUserAgent(
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
-    );
+    // Extract __APOLLO_STATE__ from __NEXT_DATA__ script tag
+    const nextDataScript = $('script#__NEXT_DATA__').html();
+    if (!nextDataScript) {
+      console.warn(`Could not find __NEXT_DATA__ for ${eventsUrl}`);
+      return [];
+    }
 
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    const nextData = JSON.parse(nextDataScript);
+    const apolloState = nextData?.props?.pageProps?.__APOLLO_STATE__;
+    if (!apolloState) {
+      console.warn(`Could not extract Apollo state from ${eventsUrl}`);
+      return [];
+    }
 
-    await page.waitForSelector('a[id^="event-card"]', { timeout: 15000 });
+    // Find all Event objects in Apollo state
+    const events = Object.keys(apolloState)
+      .filter(key => key.startsWith('Event:'))
+      .map(key => {
+        const event = apolloState[key];
 
-    console.log(`Page loaded: ${url}`);
+        // Resolve venue reference
+        let venue = 'No venue found';
+        const venueRef = event.venue?.__ref ?? event.venue?.id;
+        if (venueRef && apolloState[venueRef]) {
+          const v = apolloState[venueRef];
+          venue = [v.name, v.address, v.city].filter(Boolean).join(', ');
+        } else if (event.venue?.name) {
+          venue = [event.venue.name, event.venue.address, event.venue.city].filter(Boolean).join(', ');
+        }
 
-    // Extract content
-    const events = await page.evaluate((meetupId) => {
-      return [...document.querySelectorAll('a[id^="event-card"]')].map(event => {
-        const eventData = {
+        // Resolve photo reference
+        let logo: string | null = null;
+        const photoRef = event.featuredEventPhoto?.__ref ?? event.imageUrl;
+        if (photoRef && apolloState[photoRef]) {
+          logo = apolloState[photoRef].highResUrl ?? apolloState[photoRef].source ?? null;
+        } else if (event.featuredEventPhoto?.highResUrl) {
+          logo = event.featuredEventPhoto.highResUrl;
+        }
+
+        return {
           meetup_id: meetupId,
-          title: event.querySelector('.utils_cardTitle__sAAHG')?.innerText.trim() || 'No title found',
-          datetime: event.querySelector('time')?.innerText.trim() || 'No datetime found',
-          venue: event.querySelector('span.text-gray6')?.innerText.trim() || 'No venue found',
-          description: event.closest('li')?.querySelector('.utils_cardDescription__1Qr0x')?.innerText.trim() || 'No description',
-          logo: event.closest('li')?.querySelector('img.aspect-video')?.src || null,
-          link: event.href.startsWith('http') ? event.href : `https://www.meetup.com${event.getAttribute('href')}`,
+          title: event.title ?? 'No title found',
+          datetime: event.dateTime ?? 'No datetime found',
+          venue,
+          description: event.description ?? 'No description',
+          logo,
+          link: event.eventUrl ?? null,
         };
-        return eventData;
       });
-    }, meetupId);
 
     console.log(`Found ${events.length} events for ${url}`);
     console.log('All Extracted Events:', events);
 
-    await browser.close();
     return events;
   } catch (error) {
     console.error(`Error scraping events from ${url}:`, error);
