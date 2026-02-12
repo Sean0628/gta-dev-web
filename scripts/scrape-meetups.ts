@@ -74,6 +74,24 @@ async function scrapeMeetupPage(url: string) {
       const description = $('meta[property="og:description"]').attr('content')?.trim() || $('p').first().text().trim();
       const name = 'Toronto Ruby';
       return { name, description, logo: fullLogoUrl };
+    } else if (url.includes('aitinkerers.org')) {
+      const name = $('title').text().replace(/\s*\|.*$/, '').trim() || 'AI Tinkerers - Toronto';
+      const logoUrl = $('img[alt*="AI Tinkerers"]').first().attr('src') || $('img[alt*="AI Events"]').first().attr('src');
+      const fullLogoUrl = logoUrl ? new URL(logoUrl, url).href : null;
+      // Extract description from JSON-LD schema
+      const jsonLd = $('script[type="application/ld+json"]').html();
+      let description = '';
+      if (jsonLd) {
+        try {
+          const schema = JSON.parse(jsonLd);
+          const firstEvent = schema?.itemListElement?.[0]?.item;
+          description = firstEvent?.organizer?.description || firstEvent?.description || '';
+        } catch { /* ignore */ }
+      }
+      if (!description) {
+        description = $('meta[name="description"]').attr('content')?.trim() || $('meta[property="og:description"]').attr('content')?.trim() || '';
+      }
+      return { name, description, logo: fullLogoUrl };
     } else if (url.includes('builder-sundays') || url.includes('buildersundays')) {
       const name = $('img[alt="Builder Sundays"]').attr('alt') || 'Builder Sundays';
       const description = $('div[class*="rich_text"] p').map((_, el) => $(el).text().trim()).get().join('\n\n');
