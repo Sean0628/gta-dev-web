@@ -132,12 +132,11 @@ export const meetupSources: MeetupSource[] = [
   //   platform: "other",
   //   type: "meetups",
   // },
-  // TODO: Need custom scraping script for AI Tinkerers
-  // {
-  //   url: "https://aitinkerers.org/p/welcome",
-  //   platform: "other",
-  //   type: "meetups",
-  // },
+  {
+    url: "https://toronto.aitinkerers.org/",
+    platform: "other",
+    type: "meetups",
+  },
   {
     url: "https://www.meetup.com/toronto-ai-aligners/",
     platform: "meetup",

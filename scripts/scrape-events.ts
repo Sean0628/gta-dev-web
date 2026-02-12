@@ -77,6 +77,51 @@ async function scrapeEventsFromTorontoRuby(url: string, meetupId: string) {
   }
 }
 
+async function scrapeEventsFromAITinkerers(url: string, meetupId: string) {
+  try {
+    console.log(`Fetching AI Tinkerers page: ${url}...`);
+    const response = await fetch(url);
+    const html = await response.text();
+    const $ = load(html);
+
+    // Extract events from JSON-LD structured data
+    const jsonLdScripts = $('script[type="application/ld+json"]');
+    const events: any[] = [];
+
+    jsonLdScripts.each((_, el) => {
+      try {
+        const schema = JSON.parse($(el).html() || '');
+        const items = schema?.itemListElement || [];
+        for (const entry of items) {
+          const item = entry?.item;
+          if (!item || item['@type'] !== 'Event') continue;
+
+          const venue = item.location;
+          const venueParts = [venue?.name, venue?.address?.streetAddress, venue?.address?.addressLocality].filter(Boolean);
+
+          events.push({
+            meetup_id: meetupId,
+            title: item.name ?? 'No title found',
+            datetime: item.startDate ?? 'No datetime found',
+            venue: venueParts.length > 0 ? venueParts.join(', ') : 'No venue found',
+            description: item.description ?? 'No description',
+            logo: item.image ?? null,
+            link: item.url ?? null,
+          });
+        }
+      } catch { /* ignore malformed JSON-LD */ }
+    });
+
+    console.log(`Found ${events.length} events for AI Tinkerers`);
+    console.log('All Extracted Events:', events);
+
+    return events;
+  } catch (error) {
+    console.error(`Error scraping events from AI Tinkerers:`, error);
+    return [];
+  }
+}
+
 async function scrapeEventsFromMeetup(url: string, meetupId: string) {
   try {
     // Ensure we hit the /events/ page
@@ -172,6 +217,8 @@ async function main() {
         events = await scrapeEventsFromMeetup(meetup.url, meetup.id);
       } else if (meetup.url.includes('toronto-ruby.com')) {
         events = await scrapeEventsFromTorontoRuby(meetup.url, meetup.id);
+      } else if (meetup.url.includes('aitinkerers.org')) {
+        events = await scrapeEventsFromAITinkerers(meetup.url, meetup.id);
       } else {
         console.log(`Skipping unknown website: ${meetup.url}`);
         continue;
