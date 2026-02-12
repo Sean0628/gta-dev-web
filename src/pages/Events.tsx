@@ -1,6 +1,7 @@
 import React from 'react';
 import { EventList } from '../components/EventList';
 import { supabase } from '../lib/supabase';
+import { getCached, isFresh, setCache } from '../lib/cache';
 import type { Event } from '../types/event';
 
 export function Events() {
@@ -9,6 +10,20 @@ export function Events() {
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
+    const CACHE_KEY = 'events';
+
+    // Show cached data immediately if available (filter out past events)
+    const cached = getCached<Event[]>(CACHE_KEY);
+    if (cached) {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      setEvents(cached.filter(e => new Date(e.datetime) >= now));
+      setLoading(false);
+    }
+
+    // Skip fetch if cache is still fresh
+    if (isFresh(CACHE_KEY)) return;
+
     async function fetchEvents() {
       try {
         // Get current date at start of day in ET
@@ -35,9 +50,12 @@ export function Events() {
           meetups: undefined // Remove the meetups object as we don't need it anymore
         }));
 
+        setCache(CACHE_KEY, eventsWithLogos);
         setEvents(eventsWithLogos);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch events');
+        if (!cached) {
+          setError(err instanceof Error ? err.message : 'Failed to fetch events');
+        }
       } finally {
         setLoading(false);
       }
