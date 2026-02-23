@@ -1,6 +1,7 @@
 import React from 'react';
 import { Users, Github, CalendarDays, Menu } from 'lucide-react';
 import { MeetupGrid } from './components/MeetupGrid';
+import { MeetupGridSkeleton } from './components/Skeleton';
 import { Events } from './pages/Events';
 import { ThemeToggle } from './components/ThemeToggle';
 import type { MeetupGroup } from './types/meetup';
@@ -171,8 +172,8 @@ function App() {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <h2 className="sr-only">Toronto Tech Meetups and Communities</h2>
           {loading ? (
-            <div className="flex items-center justify-center h-64" role="status">
-              <div className="text-gray-600 dark:text-gray-300">Loading meetups...</div>
+            <div role="status" aria-label="Loading meetups">
+              <MeetupGridSkeleton />
             </div>
           ) : error ? (
             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-red-700 dark:text-red-300" role="alert">

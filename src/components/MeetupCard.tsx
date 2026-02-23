@@ -20,6 +20,10 @@ export function MeetupCard({ meetup }: MeetupCardProps) {
             src={meetup.logo}
             alt={`${meetup.name} logo`}
             className="w-full h-full object-cover"
+            width={640}
+            height={360}
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
