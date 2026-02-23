@@ -1,5 +1,6 @@
 import React from 'react';
 import { EventList } from '../components/EventList';
+import { EventListSkeleton } from '../components/Skeleton';
 import { supabase } from '../lib/supabase';
 import { getCached, isFresh, setCache } from '../lib/cache';
 import type { Event } from '../types/event';
@@ -66,10 +67,9 @@ export function Events() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex items-center justify-center h-64" role="status">
-          <div className="text-gray-600 dark:text-gray-300">Loading events...</div>
-        </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" role="status" aria-label="Loading events">
+        <div className="h-8 w-80 animate-pulse bg-gray-200 dark:bg-gray-700 rounded mb-8" />
+        <EventListSkeleton />
       </div>
     );
   }

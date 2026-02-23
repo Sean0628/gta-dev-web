@@ -35,6 +35,10 @@ export function EventList({ events }: EventListProps) {
                   src={event.logo}
                   alt={`${event.title} logo`}
                   className="w-full h-full object-cover"
+                  width={320}
+                  height={320}
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <Calendar className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-gray-400 dark:text-gray-500" />
